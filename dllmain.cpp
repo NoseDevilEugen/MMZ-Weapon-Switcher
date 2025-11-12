@@ -2,6 +2,7 @@
 #include "pch.h"
 #include <thread>
 #include <XInput.h>
+#include <map>
 #pragma comment(lib, "Xinput.lib")
 #pragma comment(lib, "Xinput9_1_0.lib")
 
@@ -17,71 +18,134 @@ enum ZXForms
     eOX
 };
 
-void IncreaseValueZX(uint8_t& nOldValue, bool bFlags[])
+void IncreaseValueZX(uint8_t& nOldValue, std::map<uint8_t, bool> arrFlags)
 {
     if (nOldValue < 7)
     {
         nOldValue++;
-        while (bFlags[nOldValue] != true && nOldValue < 7)
+        while (arrFlags[nOldValue] != true)
         {
             nOldValue++;
             if (nOldValue > 7)
             {
                 nOldValue = 0;
-                break;
+            }
+        }
+    }
+    else if (nOldValue == 7)
+    {
+        nOldValue = 0;
+        while (arrFlags[nOldValue] != true)
+        {
+            nOldValue++;
+            if (nOldValue > 7)
+            {
+                nOldValue = 0;
             }
         }
     }
 }
 
-void DecreaseValueZX(uint8_t& nOldValue, bool bFlags[])
+void DecreaseValueZX(uint8_t& nOldValue, std::map<uint8_t, bool> arrFlags)
 {
 
     if (nOldValue > 0)
     {
         nOldValue--;
-        while (bFlags[nOldValue] != true && nOldValue >0)
+        while (arrFlags[nOldValue] != true)
         {
             nOldValue--;
             if (nOldValue < 0)
             {
-                nOldValue = 0;
-                break;
+                nOldValue = 7;
+            }
+        }
+    }
+    else if (nOldValue == 0)
+    {
+        nOldValue = 7;
+        while (arrFlags[nOldValue] != true)
+        {
+            nOldValue--;
+            if (nOldValue < 0)
+            {
+                nOldValue = 7;
             }
         }
     }
 }
 
-void IncreaseValueZ4(uint8_t& nOldValue)
+void IncreaseValueZ4(uint8_t& nOldValue, uint8_t& nMainValue)
 {
-    if (nOldValue == 2)
-        nOldValue = 0;
-    else
-        nOldValue++;
+    if (nOldValue < 3)
+    {
+        if (nOldValue == 2)
+            nOldValue = 0;
+        else
+            nOldValue++;
+
+        if (nOldValue == nMainValue)
+        {
+            if (nOldValue >= 2)
+                nOldValue = 0;
+            else
+                nOldValue++;
+        }
+
+    }
 }
 
-void DecreaseValueZ4(uint8_t& nOldValue)
+void DecreaseValueZ4(uint8_t& nOldValue, uint8_t& nMainValue)
 {
-    if (nOldValue == 0)
-        nOldValue = 2;
-    else
-        nOldValue--;
+    if (nOldValue < 3)
+    {
+        if (nOldValue == 0)
+            nOldValue = 2;
+        else
+            nOldValue--;
+        
+        if (nOldValue == nMainValue)
+        {
+            if (nOldValue <= 0)
+                nOldValue = 2;
+            else
+                nOldValue--;
+        }
+    }
 }
 
-void IncreaseValue(uint8_t& nOldValue)
+void IncreaseValue(uint8_t& nOldValue, uint8_t& nMainValue)
 {
+
     if (nOldValue == 3)
         nOldValue = 0;
     else
         nOldValue++;
+
+    if (nOldValue == nMainValue)
+    {
+        if (nOldValue >= 3)
+            nOldValue = 0;
+        else
+            nOldValue++;
+    }
+
 }
 
-void DecreaseValue(uint8_t& nOldValue)
+void DecreaseValue(uint8_t& nOldValue, uint8_t& nMainValue)
 {
     if (nOldValue == 0)
         nOldValue = 3;
     else
         nOldValue--;
+   
+    if (nOldValue == nMainValue)
+    {
+        if (nOldValue <= 0)
+            nOldValue = 3;
+        else
+            nOldValue--;
+    }
 }
 
 void MyThreadFunction()
@@ -96,54 +160,53 @@ void MyThreadFunction()
     
     uint8_t* pMMZ1Sub = exeBasePtr + 0x252236B;
     uint8_t* pMMZ1Chip = exeBasePtr + 0x252237D;
+    uint8_t* pMMZ1Main = exeBasePtr + 0x252236A;
 
     uint8_t& nMMZ1SubValue = *pMMZ1Sub;
     uint8_t& nMMZ1ChipValue = *pMMZ1Chip;
+    uint8_t& nMMZ1MainValue = *pMMZ1Main;
 
     uint8_t* pMMZ2Sub = exeBasePtr + 0x2529CA1;
     uint8_t* pMMZ2Chip = exeBasePtr + 0x2529CA3;
+    uint8_t* pMMZ2Main = exeBasePtr + 0x2529CA0;
 
     uint8_t& nMMZ2SubValue = *pMMZ2Sub;
     uint8_t& nMMZ2ChipValue = *pMMZ2Chip;
+    uint8_t& nMMZ2MainValue = *pMMZ2Main;
 
     uint8_t* pMMZ3Sub = exeBasePtr + 0x2535A45;
     uint8_t* pMMZ3Chip = exeBasePtr + 0x2535A46;
     uint8_t* pMMZ3Body = exeBasePtr + 0x2535A48;
+    uint8_t* pMMZ3Main = exeBasePtr + 0x2535A44;
 
     uint8_t& nMMZ3SubValue = *pMMZ3Sub;
     uint8_t& nMMZ3ChipValue = *pMMZ3Chip;
     uint8_t& nMMZ3BodyValue = *pMMZ3Body;
+    uint8_t& nMMZ3MainValue = *pMMZ3Main;
 
     uint8_t* pMMZXBody = exeBasePtr + 0x28B5E70;
     
     uint8_t& nMMZXBodyValue = *pMMZXBody;
 
-    bool flags[8];
-    flags[eHuman] = true;
+    std::map<uint8_t, bool> arrFlags;
+    arrFlags[eHuman] = true;
 
     uint8_t* pMMZXBodyX = exeBasePtr + 0x28B13A3;
-    flags[eX] = *(int*)pMMZXBodyX & 1;
 
     uint8_t* pMMZXBodyZX = exeBasePtr + 0x28B13A4;
-    flags[eZX] = *(uint8_t*)pMMZXBodyZX >> 0 & 1;
-    flags[eHX] = *(uint8_t*)pMMZXBodyZX >> 1 & 1;
-    flags[eFX] = *(uint8_t*)pMMZXBodyZX >> 5 & 1;
-    flags[ePX] = *(uint8_t*)pMMZXBodyZX >> 7 & 1;
-    flags[eLX] = *(uint8_t*)pMMZXBodyZX >> 3 & 1;
-
 
     uint8_t* pMMZXBodyO = exeBasePtr + 0x28B13A6;
-    flags[eOX] = (*(int*)pMMZXBodyO >> 1) & 1;
-
-
+   
     
-   /* uint8_t* pMMZ4Sub = exeBasePtr + 0x2541235;
+    uint8_t* pMMZ4Sub = exeBasePtr + 0x2541235;
     uint8_t* pMMZ4Knuckle = exeBasePtr + 0x2541237;
     uint8_t* pMMZ4Toss = exeBasePtr + 0x254126E;
+    uint8_t* pMMZ4Main = exeBasePtr + 0x2541234;
 
-    int& nMMZ4SubValue = *(int*)pMMZ4Sub;
-    int& nMMZ4Knuckle = *(int*)pMMZ4Knuckle;
-    int& nMMZ4Toss = *(int*)pMMZ4Toss;*/
+    uint8_t& nMMZ4SubValue = *pMMZ4Sub;
+    uint8_t& nMMZ4Knuckle = *pMMZ4Knuckle;
+    uint8_t& nMMZ4Toss = *pMMZ4Toss;
+    uint8_t& nMMZ4MainValue = *pMMZ4Main;
     
     const BYTE TRIGGER_THRESHOLD = 50; // Adjust as needed
     bool x = true;
@@ -151,6 +214,14 @@ void MyThreadFunction()
     bool rtPressed = false;
     while (x)
     {
+        arrFlags[eX] = *pMMZXBodyX >>7 & 1;
+        arrFlags[eZX] = *pMMZXBodyZX >> 0 & 1;
+        arrFlags[eHX] = *pMMZXBodyZX >> 1 & 1;
+        arrFlags[eFX] = *pMMZXBodyZX >> 5 & 1;
+        arrFlags[ePX] = *pMMZXBodyZX >> 7 & 1;
+        arrFlags[eLX] = *pMMZXBodyZX >> 3 & 1;
+        arrFlags[eOX] = *pMMZXBodyO >> 1 & 1;
+
         exeBasePtr = (uint8_t*)exeBase;
         XINPUT_STATE state;
         ZeroMemory(&state, sizeof(XINPUT_STATE));
@@ -166,11 +237,11 @@ void MyThreadFunction()
 
             {
                 ltPressed = true;
-                DecreaseValue(nMMZ1SubValue);
-                DecreaseValue(nMMZ2SubValue);
-                DecreaseValue(nMMZ3SubValue);
-                DecreaseValueZX(nMMZXBodyValue, flags);
-                //DecreaseValueZ4(nMMZ4SubValue);
+                DecreaseValue(nMMZ1SubValue, nMMZ1MainValue);
+                DecreaseValue(nMMZ2SubValue, nMMZ2MainValue);
+                DecreaseValue(nMMZ3SubValue, nMMZ3MainValue);
+                DecreaseValueZX(nMMZXBodyValue, arrFlags);
+                DecreaseValueZ4(nMMZ4SubValue, nMMZ4MainValue);
                 //nMMZ4Knuckle = 0;
                 //nMMZ4Toss = 2;
             }
@@ -182,11 +253,11 @@ void MyThreadFunction()
                 && rtPressed == false)
             {
                 rtPressed = true;
-                IncreaseValue(nMMZ1SubValue);
-                IncreaseValue(nMMZ2SubValue);
-                IncreaseValue(nMMZ3SubValue);
-                IncreaseValueZX(nMMZXBodyValue, flags);
-                //IncreaseValueZ4(nMMZ4SubValue);
+                IncreaseValue(nMMZ1SubValue, nMMZ1MainValue);
+                IncreaseValue(nMMZ2SubValue, nMMZ2MainValue);
+                IncreaseValue(nMMZ3SubValue, nMMZ3MainValue);
+                IncreaseValueZX(nMMZXBodyValue, arrFlags);
+                IncreaseValueZ4(nMMZ4SubValue, nMMZ4MainValue);
                 //nMMZ4Knuckle = 0;
                 //nMMZ4Toss = 2;
             }
