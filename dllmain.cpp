@@ -5,126 +5,83 @@
 #pragma comment(lib, "Xinput.lib")
 #pragma comment(lib, "Xinput9_1_0.lib")
 
-
-
-void IncreaseValueZ4(int& nOldValue)
+enum ZXForms
 {
-    switch (nOldValue)
+    eHuman,
+    eX,
+    eZX,
+    eHX,
+    eFX,
+    ePX,
+    eLX,
+    eOX
+};
+
+void IncreaseValueZX(uint8_t& nOldValue, bool bFlags[])
+{
+    if (nOldValue < 7)
     {
-    case 0:
-    {
-        nOldValue = 1;
-        break;
-    }
-    case 1:
-    {
-        nOldValue = 2;
-        break;
-    }
-    case 2:
-    {
-        nOldValue = 0;
-        break;
-    }
-   
-    default:
-    {
-        nOldValue = 0;
-        break;
-    }
+        nOldValue++;
+        while (bFlags[nOldValue] != true && nOldValue < 7)
+        {
+            nOldValue++;
+            if (nOldValue > 7)
+            {
+                nOldValue = 0;
+                break;
+            }
+        }
     }
 }
 
-void DecreaseValueZ4(int& nOldValue)
+void DecreaseValueZX(uint8_t& nOldValue, bool bFlags[])
 {
-    switch (nOldValue)
+
+    if (nOldValue > 0)
     {
-    case 0:
-    {
-        nOldValue = 2;
-        break;
-    }
-    case 1:
-    {
-        nOldValue = 0;
-        break;
-    }
-    case 2:
-    {
-        nOldValue = 1;
-        break;
-    }
-   
-    default:
-    {
-        nOldValue = 2;
-        break;
-    }
+        nOldValue--;
+        while (bFlags[nOldValue] != true && nOldValue >0)
+        {
+            nOldValue--;
+            if (nOldValue < 0)
+            {
+                nOldValue = 0;
+                break;
+            }
+        }
     }
 }
 
-void IncreaseValue(int& nOldValue)
+void IncreaseValueZ4(uint8_t& nOldValue)
 {
-    switch (nOldValue)
-    {
-    case 0:
-    {
-        nOldValue = 1;
-        break;
-    }
-    case 1:
-    {
-        nOldValue = 2;
-        break;
-    }
-    case 2:
-    {
-        nOldValue = 3;
-        break;
-    }
-    case 3:
-    {
+    if (nOldValue == 2)
         nOldValue = 0;
-        break;
-    }
-    default:
-    {
-        nOldValue = 0;
-        break;
-    }
-    }
+    else
+        nOldValue++;
 }
 
-void DecreaseValue(int& nOldValue)
+void DecreaseValueZ4(uint8_t& nOldValue)
 {
-    switch (nOldValue)
-    {
-    case 0:
-    {
-        nOldValue = 3;
-        break;
-    }
-    case 1:
-    {
-        nOldValue = 0;
-        break;
-    }
-    case 2:
-    {
-        nOldValue = 1;
-        break;
-    }
-    case 3:
-    {
+    if (nOldValue == 0)
         nOldValue = 2;
-        break;
-    }
-    default:
-    {
+    else
+        nOldValue--;
+}
+
+void IncreaseValue(uint8_t& nOldValue)
+{
+    if (nOldValue == 3)
+        nOldValue = 0;
+    else
+        nOldValue++;
+}
+
+void DecreaseValue(uint8_t& nOldValue)
+{
+    if (nOldValue == 0)
         nOldValue = 3;
-        break;
-    }
-    }
+    else
+        nOldValue--;
 }
 
 void MyThreadFunction()
@@ -140,23 +97,46 @@ void MyThreadFunction()
     uint8_t* pMMZ1Sub = exeBasePtr + 0x252236B;
     uint8_t* pMMZ1Chip = exeBasePtr + 0x252237D;
 
-    int& nMMZ1SubValue = *(int*)pMMZ1Sub;
-    int& nMMZ1ChipValue = *(int*)pMMZ1Chip;
+    uint8_t& nMMZ1SubValue = *pMMZ1Sub;
+    uint8_t& nMMZ1ChipValue = *pMMZ1Chip;
 
     uint8_t* pMMZ2Sub = exeBasePtr + 0x2529CA1;
     uint8_t* pMMZ2Chip = exeBasePtr + 0x2529CA3;
 
-    int& nMMZ2SubValue = *(int*)pMMZ2Sub;
-    int& nMMZ2ChipValue = *(int*)pMMZ2Chip;
+    uint8_t& nMMZ2SubValue = *pMMZ2Sub;
+    uint8_t& nMMZ2ChipValue = *pMMZ2Chip;
 
     uint8_t* pMMZ3Sub = exeBasePtr + 0x2535A45;
     uint8_t* pMMZ3Chip = exeBasePtr + 0x2535A46;
     uint8_t* pMMZ3Body = exeBasePtr + 0x2535A48;
 
-    int& nMMZ3SubValue = *(int*)pMMZ3Sub;
-    int& nMMZ3ChipValue = *(int*)pMMZ3Chip;
-    int& nMMZ3BodyValue = *(int*)pMMZ3Body;
+    uint8_t& nMMZ3SubValue = *pMMZ3Sub;
+    uint8_t& nMMZ3ChipValue = *pMMZ3Chip;
+    uint8_t& nMMZ3BodyValue = *pMMZ3Body;
 
+    uint8_t* pMMZXBody = exeBasePtr + 0x28B5E70;
+    
+    uint8_t& nMMZXBodyValue = *pMMZXBody;
+
+    bool flags[8];
+    flags[eHuman] = true;
+
+    uint8_t* pMMZXBodyX = exeBasePtr + 0x28B13A3;
+    flags[eX] = *(int*)pMMZXBodyX & 1;
+
+    uint8_t* pMMZXBodyZX = exeBasePtr + 0x28B13A4;
+    flags[eZX] = *(uint8_t*)pMMZXBodyZX >> 0 & 1;
+    flags[eHX] = *(uint8_t*)pMMZXBodyZX >> 1 & 1;
+    flags[eFX] = *(uint8_t*)pMMZXBodyZX >> 5 & 1;
+    flags[ePX] = *(uint8_t*)pMMZXBodyZX >> 7 & 1;
+    flags[eLX] = *(uint8_t*)pMMZXBodyZX >> 3 & 1;
+
+
+    uint8_t* pMMZXBodyO = exeBasePtr + 0x28B13A6;
+    flags[eOX] = (*(int*)pMMZXBodyO >> 1) & 1;
+
+
+    
    /* uint8_t* pMMZ4Sub = exeBasePtr + 0x2541235;
     uint8_t* pMMZ4Knuckle = exeBasePtr + 0x2541237;
     uint8_t* pMMZ4Toss = exeBasePtr + 0x254126E;
@@ -189,6 +169,7 @@ void MyThreadFunction()
                 DecreaseValue(nMMZ1SubValue);
                 DecreaseValue(nMMZ2SubValue);
                 DecreaseValue(nMMZ3SubValue);
+                DecreaseValueZX(nMMZXBodyValue, flags);
                 //DecreaseValueZ4(nMMZ4SubValue);
                 //nMMZ4Knuckle = 0;
                 //nMMZ4Toss = 2;
@@ -204,6 +185,7 @@ void MyThreadFunction()
                 IncreaseValue(nMMZ1SubValue);
                 IncreaseValue(nMMZ2SubValue);
                 IncreaseValue(nMMZ3SubValue);
+                IncreaseValueZX(nMMZXBodyValue, flags);
                 //IncreaseValueZ4(nMMZ4SubValue);
                 //nMMZ4Knuckle = 0;
                 //nMMZ4Toss = 2;
