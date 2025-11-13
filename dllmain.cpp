@@ -13,15 +13,16 @@ enum ZXForms
     eZX,
     eHX,
     eFX,
-    ePX,
     eLX,
+    ePX,
     eOX
 };
 
-void IncreaseValueZX(uint8_t& nOldValue, std::map<uint8_t, bool> arrFlags)
+void IncreaseValueZX(uint8_t& nOldValue, std::map<uint8_t, bool> arrFlags, uint8_t& nVSpeed)
 {
     if (nOldValue < 7)
     {
+        nVSpeed = 1;
         nOldValue++;
         while (arrFlags[nOldValue] != true)
         {
@@ -31,9 +32,11 @@ void IncreaseValueZX(uint8_t& nOldValue, std::map<uint8_t, bool> arrFlags)
                 nOldValue = 0;
             }
         }
+        nVSpeed = 1;
     }
     else if (nOldValue == 7)
     {
+        nVSpeed = 1;
         nOldValue = 0;
         while (arrFlags[nOldValue] != true)
         {
@@ -43,14 +46,16 @@ void IncreaseValueZX(uint8_t& nOldValue, std::map<uint8_t, bool> arrFlags)
                 nOldValue = 0;
             }
         }
+        nVSpeed = 1;
     }
 }
 
-void DecreaseValueZX(uint8_t& nOldValue, std::map<uint8_t, bool> arrFlags)
+void DecreaseValueZX(uint8_t& nOldValue, std::map<uint8_t, bool> arrFlags, uint8_t& nVSpeed)
 {
 
     if (nOldValue > 0)
     {
+        nVSpeed = 1;
         nOldValue--;
         while (arrFlags[nOldValue] != true)
         {
@@ -60,9 +65,11 @@ void DecreaseValueZX(uint8_t& nOldValue, std::map<uint8_t, bool> arrFlags)
                 nOldValue = 7;
             }
         }
+        nVSpeed = 1;
     }
     else if (nOldValue == 0)
     {
+        nVSpeed = 1;
         nOldValue = 7;
         while (arrFlags[nOldValue] != true)
         {
@@ -72,6 +79,7 @@ void DecreaseValueZX(uint8_t& nOldValue, std::map<uint8_t, bool> arrFlags)
                 nOldValue = 7;
             }
         }
+        nVSpeed = 1;
     }
 }
 
@@ -196,6 +204,10 @@ void MyThreadFunction()
     uint8_t* pMMZXBodyZX = exeBasePtr + 0x28B13A4;
 
     uint8_t* pMMZXBodyO = exeBasePtr + 0x28B13A6;
+
+    uint8_t* pMMZXReset = exeBasePtr + 0x28B5C99;
+    uint8_t& pMMZXResetValue = *pMMZXReset;
+
    
     
     uint8_t* pMMZ4Sub = exeBasePtr + 0x2541235;
@@ -240,7 +252,7 @@ void MyThreadFunction()
                 DecreaseValue(nMMZ1SubValue, nMMZ1MainValue);
                 DecreaseValue(nMMZ2SubValue, nMMZ2MainValue);
                 DecreaseValue(nMMZ3SubValue, nMMZ3MainValue);
-                DecreaseValueZX(nMMZXBodyValue, arrFlags);
+                DecreaseValueZX(nMMZXBodyValue, arrFlags, pMMZXResetValue);
                 DecreaseValueZ4(nMMZ4SubValue, nMMZ4MainValue);
                 //nMMZ4Knuckle = 0;
                 //nMMZ4Toss = 2;
@@ -256,7 +268,7 @@ void MyThreadFunction()
                 IncreaseValue(nMMZ1SubValue, nMMZ1MainValue);
                 IncreaseValue(nMMZ2SubValue, nMMZ2MainValue);
                 IncreaseValue(nMMZ3SubValue, nMMZ3MainValue);
-                IncreaseValueZX(nMMZXBodyValue, arrFlags);
+                IncreaseValueZX(nMMZXBodyValue, arrFlags, pMMZXResetValue);
                 IncreaseValueZ4(nMMZ4SubValue, nMMZ4MainValue);
                 //nMMZ4Knuckle = 0;
                 //nMMZ4Toss = 2;
