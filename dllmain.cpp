@@ -1,7 +1,7 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "pch.h"
 #include <thread>
-#include <XInput.h>
+#include <windows.h>
 #include <map>
 #pragma comment(lib, "Xinput.lib")
 #pragma comment(lib, "Xinput9_1_0.lib")
@@ -342,79 +342,79 @@ void MyThreadFunction()
         arrFlags[eOX] = *pMMZXBodyO >> 1 & 1;
 
         exeBasePtr = (uint8_t*)exeBase;
-        XINPUT_STATE state;
+       /* XINPUT_STATE state;
         ZeroMemory(&state, sizeof(XINPUT_STATE));
         if (XInputGetState(0, &state) == ERROR_SUCCESS)
-        {
+        {*/
             //previous subweapon / form
-            if (state.Gamepad.bLeftTrigger < TRIGGER_THRESHOLD)
-            {
-                ltPressed = false;
-            }
-            if (state.Gamepad.bLeftTrigger >= TRIGGER_THRESHOLD
-               && ltPressed == false)
-
-            {
-                ltPressed = true;
-                DecreaseValue(nMMZ1SubValue, nMMZ1MainValue, arrMMZ1Weapons);
-                DecreaseValue(nMMZ2SubValue, nMMZ2MainValue, arrMMZ2Weapons);
-                DecreaseValue(nMMZ3SubValue, nMMZ3MainValue, arrMMZ3Weapons);
-                DecreaseValueZX(nMMZXBodyValue, arrFlags, pMMZXResetValue);
-                DecreaseValueZ4(nMMZ4SubValue, nMMZ4MainValue);
-            }
-
-            //next subweapon / form
-            if (state.Gamepad.bRightTrigger < TRIGGER_THRESHOLD)
-            {
-                rtPressed = false;
-            }
-            if (state.Gamepad.bRightTrigger >= TRIGGER_THRESHOLD
-                && rtPressed == false)
-            {
-                rtPressed = true;
-                IncreaseValue(nMMZ1SubValue, nMMZ1MainValue, arrMMZ1Weapons);
-                IncreaseValue(nMMZ2SubValue, nMMZ2MainValue, arrMMZ2Weapons);
-                IncreaseValue(nMMZ3SubValue, nMMZ3MainValue, arrMMZ3Weapons);
-                IncreaseValueZX(nMMZXBodyValue, arrFlags, pMMZXResetValue);
-                IncreaseValueZ4(nMMZ4SubValue, nMMZ4MainValue);
-            }
-
-            //set element to None (right stick up)
-            if (state.Gamepad.sThumbRY > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
-            {
-                MMZSetChipValue(eNone, nMMZ1ChipValue, arrMMZ1Chips);
-                MMZSetChipValue(eNone, nMMZ2ChipValue, arrMMZ2Chips);
-                MMZSetChipValue(eNone, nMMZ3ChipValue, arrMMZ3Chips);
-                nMMZ3BodyValue = MMZSetBodyValue(nMMZ3ChipValue);
-            }
-
-            //set element to Fire (right stick down)
-            if (state.Gamepad.sThumbRY < -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
-            {
-                MMZSetChipValue(eFire, nMMZ1ChipValue, arrMMZ1Chips);
-                MMZSetChipValue(eFire, nMMZ2ChipValue, arrMMZ2Chips);
-                MMZSetChipValue(eFire, nMMZ3ChipValue, arrMMZ3Chips);
-                nMMZ3BodyValue = MMZSetBodyValue(nMMZ3ChipValue);
-            }
-
-            //set element to Elec (right stick right)
-            if (state.Gamepad.sThumbRX > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
-            {
-                MMZSetChipValue(eElec, nMMZ1ChipValue, arrMMZ1Chips);
-                MMZSetChipValue(eElec, nMMZ2ChipValue, arrMMZ2Chips);
-                MMZSetChipValue(eElec, nMMZ3ChipValue, arrMMZ3Chips);
-                nMMZ3BodyValue = MMZSetBodyValue(nMMZ3ChipValue);
-            }
-
-            //set element to Ice (right stick left)
-            if (state.Gamepad.sThumbRX < -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
-            {
-                MMZSetChipValue(eIce, nMMZ1ChipValue, arrMMZ1Chips);
-                MMZSetChipValue(eIce, nMMZ2ChipValue, arrMMZ2Chips);
-                MMZSetChipValue(eIce, nMMZ3ChipValue, arrMMZ3Chips);
-                nMMZ3BodyValue = MMZSetBodyValue(nMMZ3ChipValue);
-            }
+        if (!(GetAsyncKeyState(0x51) & 0x8000))
+        {
+            ltPressed = false;
         }
+        if (GetAsyncKeyState(0x51) & 0x8000
+            && ltPressed == false)
+
+        {
+            ltPressed = true;
+            DecreaseValue(nMMZ1SubValue, nMMZ1MainValue, arrMMZ1Weapons);
+            DecreaseValue(nMMZ2SubValue, nMMZ2MainValue, arrMMZ2Weapons);
+            DecreaseValue(nMMZ3SubValue, nMMZ3MainValue, arrMMZ3Weapons);
+            DecreaseValueZX(nMMZXBodyValue, arrFlags, pMMZXResetValue);
+            DecreaseValueZ4(nMMZ4SubValue, nMMZ4MainValue);
+        }
+
+        //next subweapon / form
+        if (!(GetAsyncKeyState(0x45) & 0x8000))
+        {
+            rtPressed = false;
+        }
+        if (GetAsyncKeyState(0x45) & 0x8000
+            && rtPressed == false)
+        {
+            rtPressed = true;
+            IncreaseValue(nMMZ1SubValue, nMMZ1MainValue, arrMMZ1Weapons);
+            IncreaseValue(nMMZ2SubValue, nMMZ2MainValue, arrMMZ2Weapons);
+            IncreaseValue(nMMZ3SubValue, nMMZ3MainValue, arrMMZ3Weapons);
+            IncreaseValueZX(nMMZXBodyValue, arrFlags, pMMZXResetValue);
+            IncreaseValueZ4(nMMZ4SubValue, nMMZ4MainValue);
+        }
+
+        //set element to None (right stick up)
+        if (GetAsyncKeyState(0x31) & 0x8000)
+        {
+            MMZSetChipValue(eNone, nMMZ1ChipValue, arrMMZ1Chips);
+            MMZSetChipValue(eNone, nMMZ2ChipValue, arrMMZ2Chips);
+            MMZSetChipValue(eNone, nMMZ3ChipValue, arrMMZ3Chips);
+            nMMZ3BodyValue = MMZSetBodyValue(nMMZ3ChipValue);
+        }
+
+        //set element to Fire (right stick down)
+        if (GetAsyncKeyState(0x33) & 0x8000)
+        {
+            MMZSetChipValue(eFire, nMMZ1ChipValue, arrMMZ1Chips);
+            MMZSetChipValue(eFire, nMMZ2ChipValue, arrMMZ2Chips);
+            MMZSetChipValue(eFire, nMMZ3ChipValue, arrMMZ3Chips);
+            nMMZ3BodyValue = MMZSetBodyValue(nMMZ3ChipValue);
+        }
+
+        //set element to Elec (right stick right)
+        if (GetAsyncKeyState(0x32) & 0x8000)
+        {
+            MMZSetChipValue(eElec, nMMZ1ChipValue, arrMMZ1Chips);
+            MMZSetChipValue(eElec, nMMZ2ChipValue, arrMMZ2Chips);
+            MMZSetChipValue(eElec, nMMZ3ChipValue, arrMMZ3Chips);
+            nMMZ3BodyValue = MMZSetBodyValue(nMMZ3ChipValue);
+        }
+
+        //set element to Ice (right stick left)
+        if (GetAsyncKeyState(0x34) & 0x8000)
+        {
+            MMZSetChipValue(eIce, nMMZ1ChipValue, arrMMZ1Chips);
+            MMZSetChipValue(eIce, nMMZ2ChipValue, arrMMZ2Chips);
+            MMZSetChipValue(eIce, nMMZ3ChipValue, arrMMZ3Chips);
+            nMMZ3BodyValue = MMZSetBodyValue(nMMZ3ChipValue);
+        }
+        //}
     }
     MessageBox(NULL, L"Thread terminated", NULL, MB_ICONEXCLAMATION);
 }
