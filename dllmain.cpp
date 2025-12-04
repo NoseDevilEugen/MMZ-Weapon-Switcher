@@ -34,6 +34,18 @@ enum ZeroWeapon
     eShield,
 };
 
+void CheckAndSetZX(uint8_t& nOldValue, uint8_t nNewValue, std::map<uint8_t, bool> arrFlags, uint8_t& nVSpeed)
+{
+    if (nOldValue == nNewValue)
+        return;
+
+    if (arrFlags[nNewValue] == false)
+        return;
+
+    nOldValue = nNewValue;
+    nVSpeed = 1;
+
+}
 
 //set flags for unlocked chips \ weapons for MMZ games
 void SetFlags(std::map<uint8_t, bool>& arrFlags, uint8_t* pAddress)
@@ -386,6 +398,7 @@ void MyThreadFunction()
             MMZSetChipValue(eNone, nMMZ2ChipValue, arrMMZ2Chips);
             MMZSetChipValue(eNone, nMMZ3ChipValue, arrMMZ3Chips);
             nMMZ3BodyValue = MMZSetBodyValue(nMMZ3ChipValue);
+            CheckAndSetZX(nMMZXBodyValue, eHuman, arrFlags, pMMZXResetValue);//1 - hu
         }
 
         //set element to Fire (right stick down)
@@ -395,6 +408,7 @@ void MyThreadFunction()
             MMZSetChipValue(eFire, nMMZ2ChipValue, arrMMZ2Chips);
             MMZSetChipValue(eFire, nMMZ3ChipValue, arrMMZ3Chips);
             nMMZ3BodyValue = MMZSetBodyValue(nMMZ3ChipValue);
+            CheckAndSetZX(nMMZXBodyValue, eZX, arrFlags, pMMZXResetValue);//3 - zx
         }
 
         //set element to Elec (right stick right)
@@ -404,6 +418,7 @@ void MyThreadFunction()
             MMZSetChipValue(eElec, nMMZ2ChipValue, arrMMZ2Chips);
             MMZSetChipValue(eElec, nMMZ3ChipValue, arrMMZ3Chips);
             nMMZ3BodyValue = MMZSetBodyValue(nMMZ3ChipValue);
+            CheckAndSetZX(nMMZXBodyValue, eX, arrFlags, pMMZXResetValue);//2 - x
         }
 
         //set element to Ice (right stick left)
@@ -413,6 +428,25 @@ void MyThreadFunction()
             MMZSetChipValue(eIce, nMMZ2ChipValue, arrMMZ2Chips);
             MMZSetChipValue(eIce, nMMZ3ChipValue, arrMMZ3Chips);
             nMMZ3BodyValue = MMZSetBodyValue(nMMZ3ChipValue);
+            CheckAndSetZX(nMMZXBodyValue, eHX, arrFlags, pMMZXResetValue);//4 - hx
+        }
+
+        if (GetAsyncKeyState(0x35) & 0x8000)
+        {
+            CheckAndSetZX(nMMZXBodyValue, eFX, arrFlags, pMMZXResetValue);//5 - fx
+        }
+
+        if (GetAsyncKeyState(0x36) & 0x8000)
+        {
+            CheckAndSetZX(nMMZXBodyValue, eLX, arrFlags, pMMZXResetValue);//6 - lx
+        }
+        if (GetAsyncKeyState(0x37) & 0x8000)
+        {
+            CheckAndSetZX(nMMZXBodyValue, ePX, arrFlags, pMMZXResetValue);//7 - px
+        }
+        if (GetAsyncKeyState(0x38) & 0x8000)
+        {
+            CheckAndSetZX(nMMZXBodyValue, eOX, arrFlags, pMMZXResetValue);//8 - 0x
         }
         //}
     }
