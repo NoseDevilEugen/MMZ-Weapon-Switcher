@@ -446,7 +446,7 @@ void MyThreadFunction()
         }
         if (GetAsyncKeyState(0x38) & 0x8000)
         {
-            CheckAndSetZX(nMMZXBodyValue, eOX, arrFlags, pMMZXResetValue);//8 - 0x
+            CheckAndSetZX(nMMZXBodyValue, eOX, arrFlags, pMMZXResetValue);//8 - ox
         }
         //}
     }
