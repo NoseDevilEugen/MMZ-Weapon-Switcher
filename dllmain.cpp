@@ -318,6 +318,9 @@ void MyThreadFunction()
     bool x = true;
     bool ltPressed = false;
     bool rtPressed = false;
+
+    XINPUT_STATE state;
+    ZeroMemory(&state, sizeof(XINPUT_STATE));
     while (x)
     {
         //mmz1 checks for unlocked weapons and chips
@@ -342,8 +345,7 @@ void MyThreadFunction()
         arrFlags[eOX] = *pMMZXBodyO >> 1 & 1;
 
         exeBasePtr = (uint8_t*)exeBase;
-        XINPUT_STATE state;
-        ZeroMemory(&state, sizeof(XINPUT_STATE));
+        
         if (XInputGetState(0, &state) == ERROR_SUCCESS)
         {
             //previous subweapon / form
@@ -415,6 +417,7 @@ void MyThreadFunction()
                 nMMZ3BodyValue = MMZSetBodyValue(nMMZ3ChipValue);
             }
         }
+        Sleep(100);
     }
     MessageBox(NULL, L"Thread terminated", NULL, MB_ICONEXCLAMATION);
 }
