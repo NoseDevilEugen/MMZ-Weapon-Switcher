@@ -8,14 +8,14 @@
 
 enum ZXForms
 {
-    eHuman,
-    eX,
-    eZX,
-    eHX,
-    eFX,
-    eLX,
-    ePX,
-    eOX
+    eHuman,//up
+    eX,//up+r
+    eZX,//r
+    eHX,//d+r
+    eFX,//d
+    eLX,//d+l
+    ePX,//l
+    eOX//l+u
 };
 
 enum ZeroElement
@@ -71,68 +71,81 @@ uint8_t MMZSetBodyValue(uint8_t& nChipValue)
         return nChipValue + 2;
 }
 
+void CheckAndSetZX(uint8_t& nOldValue, uint8_t nNewValue, std::map<uint8_t, bool> arrFlags, uint8_t& nVSpeed)
+{
+    if (nOldValue == nNewValue)
+        return;
+
+    if (arrFlags[nNewValue] == false)
+        return;
+
+    nOldValue = nNewValue;
+    nVSpeed = 1;
+
+}
+
 //switch to next available form (MMZX)
-void IncreaseValueZX(uint8_t& nOldValue, std::map<uint8_t, bool> arrFlags, uint8_t& nVSpeed)
-{
-    if (nOldValue < 7)
-    {
-        nOldValue++;
-        while (arrFlags[nOldValue] != true)
-        {
-            nOldValue++;
-            if (nOldValue > 7)
-            {
-                nOldValue = 0;
-            }
-        }
-        nVSpeed = 1;
-    }
-    else if (nOldValue == 7)
-    {
-        nOldValue = 0;
-        while (arrFlags[nOldValue] != true)
-        {
-            nOldValue++;
-            if (nOldValue > 7)
-            {
-                nOldValue = 0;
-            }
-        }
-        nVSpeed = 1;
-    }
-}
-
-//switch to previous available form (MMZX)
-void DecreaseValueZX(uint8_t& nOldValue, std::map<uint8_t, bool> arrFlags, uint8_t& nVSpeed)
-{
-
-    if (nOldValue > 0)
-    {
-        nOldValue--;
-        while (arrFlags[nOldValue] != true)
-        {
-            nOldValue--;
-            if (nOldValue < 0)
-            {
-                nOldValue = 7;
-            }
-        }
-        nVSpeed = 1;
-    }
-    else if (nOldValue == 0)
-    {
-        nOldValue = 7;
-        while (arrFlags[nOldValue] != true)
-        {
-            nOldValue--;
-            if (nOldValue < 0)
-            {
-                nOldValue = 7;
-            }
-        }
-        nVSpeed = 1;
-    }
-}
+//void IncreaseValueZX(uint8_t& nOldValue, std::map<uint8_t, bool> arrFlags, uint8_t& nVSpeed)
+//{
+//    if (nOldValue < 7)
+//    {
+//        nOldValue++;
+//        while (arrFlags[nOldValue] != true)
+//        {
+//            nOldValue++;
+//            if (nOldValue > 7)
+//            {
+//                nOldValue = 0;
+//            }
+//        }
+//        nVSpeed = 1;
+//    }
+//    else if (nOldValue == 7)
+//    {
+//        nOldValue = 0;
+//        while (arrFlags[nOldValue] != true)
+//        {
+//            nOldValue++;
+//            if (nOldValue > 7)
+//            {
+//                nOldValue = 0;
+//            }
+//        }
+//        nVSpeed = 1;
+//    }
+//}
+//
+////switch to previous available form (MMZX)
+//void DecreaseValueZX(uint8_t& nOldValue, std::map<uint8_t, bool> arrFlags, uint8_t& nVSpeed)
+//{
+//
+//    if (nOldValue > 0)
+//    {
+//        nOldValue--;
+//        while (arrFlags[nOldValue] != true)
+//        {
+//            nOldValue--;
+//            if (nOldValue < 0)
+//            {
+//                nOldValue = 7;
+//            }
+//        }
+//        nVSpeed = 1;
+//    }
+//    else if (nOldValue == 0)
+//    {
+//        nOldValue = 7;
+//        while (arrFlags[nOldValue] != true)
+//        {
+//            nOldValue--;
+//            if (nOldValue < 0)
+//            {
+//                nOldValue = 7;
+//            }
+//        }
+//        nVSpeed = 1;
+//    }
+//}
 
 //next subweapon in MMZ4 (does not work if weapon stolen)
 void IncreaseValueZ4(uint8_t& nOldValue, uint8_t& nMainValue)
@@ -361,7 +374,7 @@ void MyThreadFunction()
                 DecreaseValue(nMMZ1SubValue, nMMZ1MainValue, arrMMZ1Weapons);
                 DecreaseValue(nMMZ2SubValue, nMMZ2MainValue, arrMMZ2Weapons);
                 DecreaseValue(nMMZ3SubValue, nMMZ3MainValue, arrMMZ3Weapons);
-                DecreaseValueZX(nMMZXBodyValue, arrFlags, pMMZXResetValue);
+                //DecreaseValueZX(nMMZXBodyValue, arrFlags, pMMZXResetValue);
                 DecreaseValueZ4(nMMZ4SubValue, nMMZ4MainValue);
             }
 
@@ -377,7 +390,7 @@ void MyThreadFunction()
                 IncreaseValue(nMMZ1SubValue, nMMZ1MainValue, arrMMZ1Weapons);
                 IncreaseValue(nMMZ2SubValue, nMMZ2MainValue, arrMMZ2Weapons);
                 IncreaseValue(nMMZ3SubValue, nMMZ3MainValue, arrMMZ3Weapons);
-                IncreaseValueZX(nMMZXBodyValue, arrFlags, pMMZXResetValue);
+                //IncreaseValueZX(nMMZXBodyValue, arrFlags, pMMZXResetValue);
                 IncreaseValueZ4(nMMZ4SubValue, nMMZ4MainValue);
             }
 
@@ -415,6 +428,54 @@ void MyThreadFunction()
                 MMZSetChipValue(eIce, nMMZ2ChipValue, arrMMZ2Chips);
                 MMZSetChipValue(eIce, nMMZ3ChipValue, arrMMZ3Chips);
                 nMMZ3BodyValue = MMZSetBodyValue(nMMZ3ChipValue);
+            }
+
+            if (state.Gamepad.bLeftTrigger >= TRIGGER_THRESHOLD
+                || state.Gamepad.bRightTrigger >= TRIGGER_THRESHOLD)
+            {
+                //trigger held
+
+                if (state.Gamepad.sThumbRY > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)//rs up
+                {
+                    if(state.Gamepad.sThumbRX > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)//rs up + right
+                    {
+                        CheckAndSetZX(nMMZXBodyValue, eX, arrFlags, pMMZXResetValue);
+                    }
+                    else if (state.Gamepad.sThumbRX < -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)//rs up + left
+                    {
+                        CheckAndSetZX(nMMZXBodyValue, eOX, arrFlags, pMMZXResetValue);
+                    }
+                    else//just rs up
+                    {
+                        CheckAndSetZX(nMMZXBodyValue, eHuman, arrFlags, pMMZXResetValue);
+                    }
+                }
+                else if (state.Gamepad.sThumbRY < -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)//rs down
+                {
+                    if (state.Gamepad.sThumbRX > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)//rs down + right
+                    {
+                        CheckAndSetZX(nMMZXBodyValue, eHX, arrFlags, pMMZXResetValue);
+                    }
+                    else if (state.Gamepad.sThumbRX < -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)//rs down + left
+                    {
+                        CheckAndSetZX(nMMZXBodyValue, eLX, arrFlags, pMMZXResetValue);
+                    }
+                    else//just rs down
+                    {
+                        CheckAndSetZX(nMMZXBodyValue, eFX, arrFlags, pMMZXResetValue);
+                    }
+                }
+                else //rs y neutral
+                {
+                    if (state.Gamepad.sThumbRX > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)//rs right
+                    {
+                        CheckAndSetZX(nMMZXBodyValue, eZX, arrFlags, pMMZXResetValue);
+                    }
+                    else if (state.Gamepad.sThumbRX < -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)//rs left
+                    {
+                        CheckAndSetZX(nMMZXBodyValue, ePX, arrFlags, pMMZXResetValue);
+                    }
+                }
             }
         }
         Sleep(100);
