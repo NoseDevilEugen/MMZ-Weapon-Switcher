@@ -1,0 +1,6 @@
+# build outputs 
+.vs/
+x64/
+Win32/
+Debug/
+Release/
