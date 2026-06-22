@@ -19,10 +19,12 @@ void MyThreadFunction()
     uint8_t* exeBasePtr = (uint8_t*)exeBase;   
     
     //rank
+    uint8_t* pMMZ1Rank  = exeBasePtr + 0x2511A49;
     uint8_t* pMMZ2Rank  = exeBasePtr + 0x251A2B5;
     uint8_t* pMMZ3Rank  = exeBasePtr + 0x251DE35;
     uint8_t* pMMZ4Rank  = exeBasePtr + 0x2521665;
 
+    uint8_t& nMMZ1RankValue = *pMMZ1Rank;
     uint8_t& nMMZ2RankValue = *pMMZ2Rank;
     uint8_t& nMMZ3RankValue = *pMMZ3Rank;
     uint8_t& nMMZ4RankValue = *pMMZ4Rank;
@@ -32,6 +34,7 @@ void MyThreadFunction()
     while (x)
     {
         //mmz1 checks for unlocked weapons and chips
+        nMMZ1RankValue = 6;
         nMMZ2RankValue = 6;
         nMMZ3RankValue = 6;
         nMMZ4RankValue = 6;
